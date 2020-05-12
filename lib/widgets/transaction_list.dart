@@ -3,67 +3,72 @@ import 'package:intl/intl.dart';
 
 import '../models/transaction.dart';
 
+class TransactionList extends StatelessWidget {
+  final List<Transaction> transactions;
+  final Function deleteTx;
 
-class TransactionList extends StatefulWidget {
-  @override
-  _TransactionListState createState() => _TransactionListState();
-}
-
-class _TransactionListState extends State<TransactionList> {
-  final List<Transaction> _userTransactions = [
-    Transaction(
-        id: 't1', title: 'New Shoes', amount: 69.99, date: DateTime.now()),
-    Transaction(
-        id: 't2',
-        title: 'Weekly Groceries',
-        amount: 16.53,
-        date: DateTime.now()),
-  ];
-
+  TransactionList(this.transactions, this.deleteTx);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: _userTransactions.map((tx) {
-        return Card(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin:
-                EdgeInsets.symmetric(vertical: 10, horizontal: 50),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.purple, width: 2)),
-                padding: EdgeInsets.all(10),
-                child: Text('\$ ${tx.amount}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.purple,
-                    )),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    tx.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+    return transactions.isEmpty
+        ? LayoutBuilder(builder: (ctx, constraint) {
+            return Column(
+              children: <Widget>[
+                Text('No transactions added yet',
+                    style: Theme.of(context).textTheme.title),
+                SizedBox(
+                  // Separator between text and image
+                  height: 10,
+                ),
+                Container(
+                  height: constraint.maxHeight * 0.6,
+                  child: Image.asset(
+                    'assets/images/waiting.png',
+                    fit: BoxFit.cover,
                   ),
-                  Text(
-                    DateFormat.yMMMd().format(tx.date),
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
+                ),
+              ],
+            );
+          })
+        : ListView.builder(
+            itemBuilder: (ctx, id) {
+              return Card(
+                elevation: 5,
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                child: ListTile(
+                  leading: CircleAvatar(
+                    radius: 30,
+                    child: Text('\$${transactions[id].amount}'),
                   ),
-                ],
-              )
-            ],
-          ),
-        );
-      }).toList(),
-    );
+                  title: Text(
+                    transactions[id].title,
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                  subtitle: Text(
+                    DateFormat.yMMMd().format(transactions[id].date),
+                    style: Theme.of(context).textTheme.title,
+                  ),
+                  trailing: MediaQuery.of(context).size.width > 460
+                      ? FlatButton.icon(
+                          textColor: Theme.of(context).errorColor,
+                          label: Text('Delete'),
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            deleteTx(transactions[id].id);
+                          },
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Theme.of(context).errorColor,
+                          onPressed: () {
+                            deleteTx(transactions[id].id);
+                          },
+                        ),
+                ),
+              );
+            },
+            itemCount: transactions.length,
+          );
   }
 }
