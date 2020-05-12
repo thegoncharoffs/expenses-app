@@ -28,9 +28,9 @@ class _NewTransactionState extends State<NewTransaction> {
     final enteredTitle = _titleController.text;
     final enteredAmount = double.parse(_amountController.text);
 
-    if (enteredAmount <= 0 ||
-        enteredTitle.isNotEmpty ||
-        _selectedDate == null) {
+    if (enteredAmount >= 0 &&
+        enteredTitle.isNotEmpty &&
+        _selectedDate != null) {
       widget.addTx(
         enteredTitle,
         enteredAmount,
