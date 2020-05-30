@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
+import './trabsaction_item.dart';
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
@@ -31,44 +31,10 @@ class TransactionList extends StatelessWidget {
               ],
             );
           })
-        : ListView.builder(
-            itemBuilder: (ctx, id) {
-              return Card(
-                elevation: 5,
-                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    radius: 30,
-                    child: Text('\$${transactions[id].amount}'),
-                  ),
-                  title: Text(
-                    transactions[id].title,
-                    style: Theme.of(context).textTheme.title,
-                  ),
-                  subtitle: Text(
-                    DateFormat.yMMMd().format(transactions[id].date),
-                    style: Theme.of(context).textTheme.title,
-                  ),
-                  trailing: MediaQuery.of(context).size.width > 460
-                      ? FlatButton.icon(
-                          textColor: Theme.of(context).errorColor,
-                          label: Text('Delete'),
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            deleteTx(transactions[id].id);
-                          },
-                        )
-                      : IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Theme.of(context).errorColor,
-                          onPressed: () {
-                            deleteTx(transactions[id].id);
-                          },
-                        ),
-                ),
-              );
-            },
-            itemCount: transactions.length,
+        : ListView(
+            children: transactions
+                .map((tx) => TransactionItem(key: ValueKey(tx.id), transaction: tx, deleteTx: deleteTx))
+                .toList(),
           );
   }
 }
